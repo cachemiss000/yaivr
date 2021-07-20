@@ -1,0 +1,10 @@
+/* You can add global styles to this file, and also import other style files */
+#window-container {
+  height: 100vh;
+  align-content: center
+}
+
+#main-img {
+  height: 100%;
+  object-fit: contain
+}
