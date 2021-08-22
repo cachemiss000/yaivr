@@ -1,14 +1,21 @@
+
+<title>{{title}}</title>
 <div class="d-flex p-2 flex-column" id="window-container">
-  <h3 class="flex-item bg-primary text-center text-white p-2">
-    Yet Another Reddit Image Viewer </h3>
-  <img class="flex-item" [src]="imageUrl" [alt]="imageDescription" (click)="nextImage()" id="main-img">
+  <div class="flex-item bg-primary text-center text-white p-2">
+    <div class="d-flex flex-row justify-content-between">
+      <div class="flex-item col-6 p-2"> <h3>Yet Another Reddit Image Viewer</h3></div>
+      <div class="flex-tem col-4 py-2"><input class="form-control" placeholder="subreddit" #nextSubText
+                                         (change)="updateSubreddit(nextSubText.value)"/></div>
+    </div>
+  </div>
+  <img class="flex-item" [src]="curPost.postUrl" [alt]="curPost.title"  (click)="doClick()" id="main-img">
   <div class="d-flex flex-row justify-content-between bg-dark">
     <div class="text-center text-white my-auto border-end" style="width: 40vw">
-      {{ imageDescription }}
+      {{ curPost.title }}
     </div>
     <div class="flex-item p-2" style="max-width: 40vw">
-      <button class="btn btn-primary mx-auto" (click)="nextImage()">Next</button>
+      <button class="btn btn-primary m-2" (click)="nextImage()">Next</button>
+      <button class="btn btn-primary m-2" (click)="prevImage()">Previous</button>
     </div>
-
   </div>
 </div>
