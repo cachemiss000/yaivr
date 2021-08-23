@@ -1,29 +1,23 @@
 import {Injectable} from "@angular/core";
-import * as Promise from "bluebird";
-import {ImageList} from "./imageList";
 import {HttpClient} from "@angular/common/http";
 import {RedditPost} from "./redditPost";
-import {Child, Convert, SubredditListing} from "./schema/subredditListing"
+import {Child, Convert} from "./schema/subredditListing"
+
 
 let SUPPORTED_POST_TYPES = ["image"]; // TODO: rich:video
 
-@Injectable()
+@Injectable({
+  providedIn: "root",
+})
 export class SubRedditFetcher {
   private subreddits: Map<string, Subreddit> = new Map();
 
   constructor(private http: HttpClient) {
   }
 
-  getPosts(name: string): Promise<ImageList> {
-    return this.getSubreddit(name).getPosts(this.http).then((children: Child[]) =>
-      new ImageList(
-        children.filter(SubRedditFetcher.supported).map(RedditPost.fromPostData)));
-  }
-
-  async addPosts(name: string, imageList: ImageList) {
-    return this.getSubreddit(name).getPosts(this.http).then((children: Child[]) =>
-      imageList.put(
-        children.filter(SubRedditFetcher.supported).map(RedditPost.fromPostData)));
+  async getPosts(name: string): Promise<RedditPost[]> {
+    let posts = await this.getSubreddit(name).getPosts(this.http);
+    return posts.filter(SubRedditFetcher.supported).map(RedditPost.fromPostData);
   }
 
   private static supported(child: Child) {
@@ -45,7 +39,7 @@ class Subreddit {
   constructor(private subredditName: string, private after?: string, private count = 0, private limit = 10) {
   }
 
-  getPosts(http: HttpClient): Promise<Child[]> {
+  async getPosts(http: HttpClient): Promise<Child[]> {
     let url = new URL(`https://www.reddit.com/r/${this.subredditName}.json`);
     if (this.after != null) {
       url.searchParams.append('after', this.after);
@@ -56,16 +50,13 @@ class Subreddit {
     if (this.limit) {
       url.searchParams.append('limit', String(this.limit));
     }
-    return Promise.resolve(http.get(url.toString(), {responseType: "text"}).toPromise())
-      .then((response: string): SubredditListing =>
-        Convert.toSubredditListing(response || ""))
-      .then((listing?: SubredditListing) => {
-        if (listing == null || listing.data == null || listing.data.children == null) {
-          throw new TypeError(`Listing missing expected data: ${listing}`)
-        }
-        this.after = listing.data?.after || undefined;
-        this.count += listing.data?.dist || 0;
-        return listing.data.children;
-      });
+    let response = await Promise.resolve(http.get(url.toString(), {responseType: "text"}).toPromise());
+    let listing = Convert.toSubredditListing(response);
+    if (listing == null || listing.data == null || listing.data.children == null) {
+      throw new TypeError(`Listing missing expected data: ${listing}`)
+    }
+    this.after = listing.data?.after || undefined;
+    this.count += listing.data?.dist || 0;
+    return listing.data.children;
   }
 }

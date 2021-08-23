@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  DEFAULT_SUBREDDIT: "photos",
+  // The number of images remaining in a list before the program will grab more
+  PRELOAD_DISTANCE: 2,
 };
 
 /*
