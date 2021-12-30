@@ -20,6 +20,10 @@ export class SubRedditPosts {
   }
 
   prev() {
+    if (!this.posts?.length) {
+      return;
+    }
+
     this.index -= 1;
     if (this.index < 0) {
       this.index = this.posts.length - 1;
@@ -27,6 +31,10 @@ export class SubRedditPosts {
   }
 
   next() {
+    if (!this.posts?.length) {
+      return;
+    }
+
     this.index = (this.index + 1) % this.posts.length;
   }
 

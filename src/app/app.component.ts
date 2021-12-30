@@ -19,6 +19,7 @@ export class AppComponent {
     Promise.longStackTraces();
     window.addEventListener("keydown", (event) => this.processKey(event))
     window.addEventListener("blur", (_) => this.loseFocus());
+    this.resetImageTimer()
   }
 
   updateSubreddit(sub: string) {
@@ -32,7 +33,7 @@ export class AppComponent {
       this.docHasFocus = true;
       return;
     }
-    this.imageSelector.nextImage();
+    this.nextImage();
   }
 
   /** Resets the timer that controls flipping to the next image. */
@@ -43,7 +44,7 @@ export class AppComponent {
     }
     this.imageTimerId = setTimeout(() => {
       this.imageTimerId = null;
-      this.imageSelector.nextImage()
+      this.nextImage()
     }, this.imageTimerMilliseconds)
   }
 
@@ -51,11 +52,21 @@ export class AppComponent {
     console.log("Key event: ")
     console.log(event)
     if (event.key == 'ArrowLeft') {
-      this.imageSelector.nextImage()
+      this.prevImage()
     }
     if (event.key == 'ArrowRight') {
-      this.imageSelector.nextImage();
+      this.nextImage()
     }
+  }
+
+  nextImage() {
+    this.imageSelector.nextImage();
+    this.resetImageTimer();
+  }
+
+  prevImage() {
+    this.imageSelector.prevImage();
+    this.resetImageTimer();
   }
 
   loseFocus() {
